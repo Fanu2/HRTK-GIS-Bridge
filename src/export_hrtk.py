@@ -1,9 +1,11 @@
 from pathlib import Path
 import sqlite3
+
 import pandas as pd
+import geopandas as gpd
 
 
-# HRTK demo database
+
 DB = Path(
     "../Haryana-Revenue-Toolkit/demo/database/hrtk_demo.db"
 )
@@ -18,49 +20,59 @@ OUTPUT.mkdir(
 )
 
 
+GPKG = OUTPUT / "HRTK_Land_Data.gpkg"
 
-def export_table(
+
+
+def read_table(
     table_name
 ):
-
-    """
-    Export HRTK table to CSV.
-    """
 
     conn = sqlite3.connect(
         DB
     )
-
 
     df = pd.read_sql_query(
         f"SELECT * FROM {table_name}",
         conn
     )
 
-
     conn.close()
 
+    return df
 
-    output_file = (
-        OUTPUT /
-        f"{table_name}.csv"
+
+
+def export_csv(
+    table_name
+):
+
+    df = read_table(
+        table_name
     )
 
-
     df.to_csv(
-        output_file,
+        OUTPUT / f"{table_name}.csv",
         index=False
     )
 
-
     print(
-        "Exported:",
-        output_file
+        "CSV:",
+        table_name
     )
 
 
 
-def main():
+def export_geopackage():
+
+    """
+    Create QGIS compatible package.
+
+    Current HRTK database has
+    revenue attributes only.
+    Geometry will be added later.
+    """
+
 
     tables = [
         "villages",
@@ -71,11 +83,55 @@ def main():
     ]
 
 
+    if GPKG.exists():
+
+        GPKG.unlink()
+
+
+
     for table in tables:
 
-        export_table(
+        df = read_table(
             table
         )
+
+
+        gdf = gpd.GeoDataFrame(
+            df
+        )
+
+
+        gdf.to_file(
+            GPKG,
+            layer=table,
+            driver="GPKG"
+        )
+
+
+        print(
+            "GPKG:",
+            table
+        )
+
+
+
+def main():
+
+
+    for table in [
+        "villages",
+        "khewats",
+        "owners",
+        "ownerships",
+        "parcels",
+    ]:
+
+        export_csv(
+            table
+        )
+
+
+    export_geopackage()
 
 
     print(
