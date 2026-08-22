@@ -1,2 +1,3 @@
 id,village_id,owner_code,owner_name,father_name,address,mobile,remarks,active
 1,8d395f93-17f4-4f7c-9d56-571e3aecefe7,OWN001,Jasvir Singh,Gurbachan Singh,Taruana,9999999999,ok,1
+2,2802ce77-b2e3-4376-ae23-c9d88bae9112,OWN002,Baldev Singh,Kartar Singh,"Chautala, Sirsa",,Demo owner,1
