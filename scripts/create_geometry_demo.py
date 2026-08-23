@@ -1,5 +1,6 @@
 import sqlite3
 from pathlib import Path
+
 import geopandas as gpd
 from shapely.geometry import Polygon
 
@@ -9,15 +10,15 @@ GPKG = Path(
 )
 
 
-# Demo parcel polygons
+# Demo parcel polygons matching the current HRTK demo database.
 records = []
 
 
 parcels = [
-    (1, "101", "1"),
-    (2, "101", "2"),
-    (3, "102", "1"),
-    (4, "102", "2"),
+    (1, "1290", "25"),
+    (2, "129", "13"),
+    (3, "15", "7"),
+    (4, "15", "8"),
 ]
 
 
@@ -30,7 +31,7 @@ for parcel_id, rectangle, killa in parcels:
         (x + 0.008, 0),
         (x + 0.008, 0.008),
         (x, 0.008),
-        (x, 0)
+        (x, 0),
     ])
 
     records.append(
@@ -38,21 +39,21 @@ for parcel_id, rectangle, killa in parcels:
             "parcel_id": parcel_id,
             "rectangle": rectangle,
             "killa": killa,
-            "geometry": polygon
+            "geometry": polygon,
         }
     )
 
 
 gdf = gpd.GeoDataFrame(
     records,
-    crs="EPSG:4326"
+    crs="EPSG:4326",
 )
 
 
 gdf.to_file(
     GPKG,
     layer="parcel_geometry",
-    driver="GPKG"
+    driver="GPKG",
 )
 
 
